@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Demonstration</title>
+  <meta charset="utf-8" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.6.1/leaflet.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  <script src="http://bl.ocks.org/milkbread/raw/5909613/simplify_RK_1.1.js"></script>
+  <style>
+  @import url(http://cdn.leafletjs.com/leaflet-0.6.1/leaflet.css);
+  .row{
+    display:inline-block;
+  }
+  .main_container{
+    width:100%;
+    background-color:#ddd;
+    padding-left:7%;
+  }
+  .container{
+    margin-bottom:10px;
+    padding:20px;
+    padding-left:0px;
+  }
+  .heading{
+    font-size:24pt;
+  }
+  .centered{
+    text-align:center;
+  }
+  .margin1{
+    margin:10px;
+  }
+  .main_heading{
+    font-size:32pt;
+  }
+  .description{
+    font-size:22pt;
+  }
+  </style>
+</head>
+<body>
+  <script>
+  var search_tag = location.search.replace('?','');
+  var file = 'demo.json';
+  if (search_tag.length!=0){
+    file = search_tag;
+  }
+
+  d3.json(file, function(error, json_) {
+    d3.select('body').append('p').attr("class","main_heading centered margin1").text(json_.properties.title)
+    d3.select('body').append('p').attr("class","description centered margin1").text(json_.properties.description)
+    d3.select('body').append('div').attr('class','main_container').attr('id','main_container')
+    
+    json_.features.forEach(showDemoStages)
+  })
+
+  function showDemoStages(feature, id){
+    var geometries = feature.geometries.features;
+    var container = d3.select('#main_container').append('div').attr('class','row').append('div').attr('id',id).attr('class','container')
+
+
+    container.append('div').attr('class','heading centered').append('text').text('Stage Nr.'+id).attr('id','text'+id)
+    
+    var width = 500, height = 250;
+    container.append('div').attr('id','map'+id).style('width',width+'px').style('height',height+'px')//.style('margin-left',(window.innerWidth-width)/2 + 'px')
+    var map = L.map('map'+id).setView([53, 20], 5);
+    var data_attrib = " | Data: <a href='http://www.openstreetmap.org/'>&copy; OpenStreetMap </a>contributers | <a href='http://d3js.org/'>D3.js</a>"
+    var stamen = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {attribution: "Map: <a href='http://maps.stamen.com/#toner/12/37.7706/-122.3782'>Stamen Design</a>" + data_attrib}).addTo(map);
+    var baseLayers = {"stamen": stamen};
+    var overlays = {};
+    var lGroup = L.layerGroup()
+    var pGroup = L.layerGroup()
+      
+    var color = d3.scale.category10()
+
+    var polyline;
+
+    var minArea = {'value':Infinity,'index':-1};
+    geometries.forEach(function(d, i){
+      if(d.geometry.type=='Polygon'){
+        if(minArea.value > d.properties.area){
+          minArea.value = d.properties.area;
+          minArea.index = i;
+        }
+      }
+    })
+
+    geometries.forEach(function(d,i){
+      if(d.geometry.type=='LineString'){
+        polyline = L.polyline(d.geometry.coordinates.map(function(e){return [e[1],e[0]]}), {color: "#f00"});
+        overlays['linestring ['+d.geometry.coordinates.length+' Points]'] = polyline;
+        map.fitBounds(polyline.getBounds())
+
+        d.geometry.coordinates.forEach(function(e,i){
+          var circle = L.circle([e[1],e[0]], 100, { color: '#000', fillColor: '#000'});
+          pGroup.addLayer(circle)
+        })
+      }
+      else if(d.geometry.type=='Polygon'){
+        if(i != minArea.index)c='#777'
+        else c='#f0f'
+        var polygon = L.polygon(d.geometry.coordinates.map(function(f){return f.map(function(g){return [g[1],g[0]]})}), {color: c });//color(i)});
+        polygon.bindPopup("Area: "+d.properties.area.toFixed(6));
+        lGroup.addLayer(polygon);
+      }
+    })
+    lGroup.addTo(map);
+    overlays['triangles'] = lGroup;
+    pGroup.addTo(map);
+    overlays['points'] = pGroup;
+    polyline.addTo(map);
+    L.control.layers(baseLayers, overlays).addTo(map)
+  }
+  
+</script>
+ </body>
+</html>

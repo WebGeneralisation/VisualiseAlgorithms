@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>VisualiseAlgorithms</title>
+  
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <style>
+  *{
+    color:#555;
+    background-color:#ddd;
+  }
+  .mainContainer{
+    width:75%;
+    margin-left:12%;
+    display:block;
+  }
+  #heading{
+    font-size:24pt;
+    text-align:center;
+    font-family: sans-serif;
+  }
+  a.disc, .disc{
+    text-decoration: none;
+    font-size:22pt;
+    transition: ease 750ms color;
+  }
+.margin0{
+  margin:10px;
+}
+
+  a.disc:hover{
+    color:#a00;
+  }
+  .input_text{
+    display:block;
+    font-size:18pt;
+  }
+  .inset_shadow{
+    text-shadow: rgb(255,255,255) 1px 1px 0px; 
+  }
+  </style>
+</head>
+
+<body>
+  <div class='mainContainer'>
+    <p id='heading'>WebGen - Visualise Algorithms</p>
+    <ul>
+      <li><a class='disc margin0 inset_shadow' href="visAlgo.html">Watch the exemplary demo of the Visvalingam-Wyatt-Algorithm</a>
+        <a href="https://github.com/milkbread/Visvalingam-Wyatt">(https://github.com/milkbread/Visvalingam-Wyatt)</a></li>
+      <li id='inputs'>
+        <p class='disc margin0 inset_shadow' href="discover_gists.html">Watch an individual DemoJSON-File:</p>
+        <p class='input_text margin0'>Username:</p> 
+        <input type='input' id='input_user'>
+        <p class='input_text margin0'>Repository:</p> 
+        <input type='input' id='input_repo'>
+        <p class='input_text margin0'>Branch:</p> 
+        <input type='input' id='input_branch'>
+        <p class='input_text margin0'>Filename:</p> 
+        <input type='input' id='input_file'>
+        <input type='submit' id='submit_file'>
+      </li>
+    </ul>
+    
+  </div>
+
+<script> 
+d3.select('#submit_file').on('mouseup',function(){
+  var userName = document.getElementById("input_user").value;
+  var repo = document.getElementById("input_repo").value;
+  var branch = document.getElementById("input_branch").value;
+  var filename = document.getElementById("input_file").value;
+  doDiscovery(userName, repo, branch, filename);
+})
+
+function doDiscovery(userName_, repo_, branch_, filename_){
+  if(userName_.length != 0 && repo_.length != 0 && branch_.length != 0 && filename_.length != 0){
+    location.href='visAlgo.html?' + 'https://raw.github.com/' + userName_ + '/' + repo_ + '/' + branch_ + '/' + filename_;
+    console.log(location.href)
+    //window.reload()
+  }
+  else alert('Please fill in the required information!')
+}
+
+function submit(value){
+  doDiscovery(value)
+}
+
+</script>
+
+</body>
