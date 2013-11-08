@@ -4,7 +4,7 @@ VisualiseAlgorithms
 This is a project that enables you to demonstrate, what an algorithm does, by visualising single processing steps.
 
 ### Introduction
-Therefore, we've got a JSON-specification, that describes you how to define a corresponding 'DemoFile'.
+Therefore, we developed a JSON-specification, that describes you how to define a corresponding 'DemoJSON-file'.
 
 * Basic Object: **"DemoCollection"**, which contains:
 	- type
@@ -23,6 +23,8 @@ Therefore, we've got a JSON-specification, that describes you how to define a co
 			- (geometry-) type
 			- coordinates
 
+### Example of a corresponding 'DemoJSON-file'
+*contains a Polygon and a LineString for each stage of the demonstration...but you can add any possible GeometryType*
 
 ```JSON
 {
